@@ -25,4 +25,4 @@ app.get('/translate', async (request, response) => {
     return response.status(200).send(data)
 })
 
-app.listen(3200, () => console.log('Application listning on 3200'))
+app.listen(process.env.PORT || 3200, () => console.log('Application listning on 3200'))
