@@ -1,6 +1,9 @@
 const UserAgent = require("user-agents");
 const cheerio = require("cheerio");
-const app = require('express')();
+const express = require('express')
+const router = express.Router();
+const bodyParser = require("body-parser");
+const app = express();
 const axios = require('axios');
 
 const { replaceBoth } = require("./language");
@@ -19,10 +22,18 @@ const googleScrape = async (source, target, query) => {
     return translationRes ? { translationRes } : { errorMsg: "An error occurred while parsing the translation" };
 }
 
-app.get('/translate', async (request, response) => {
-    const { source, target, text } = request.query
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+router.post('/translate', async (req, res, next) => {
+    let { source, target } = req.query
+    const text = req.body.txt
+    source = source ? source : 'pt'
+    target = target ? target : 'en'
     const data = await googleScrape(source, target, text)
-    return response.status(200).send(data)
+    return res.status(200).send(data)
 })
+
+app.use("/", router);
 
 app.listen(process.env.PORT || 3200, () => console.log('Application listning on 3200'))
